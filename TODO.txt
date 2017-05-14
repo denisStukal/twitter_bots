@@ -1,0 +1,3 @@
+define set of reasonable options
+make different looping functions depending on the used option: and do NOT check the option for every tweet
+
