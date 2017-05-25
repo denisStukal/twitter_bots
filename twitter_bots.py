@@ -1,10 +1,6 @@
 from pysmap import SmappDataset
 import datetime, time, re, math
 import numpy as np
-# "politicalness"
-# dates tuples instead of start and end dates
-# is_in_time_range redefined for multiple pairs of dates
-# loop split by functions
 
 class Twitter_accounts():
     
@@ -33,23 +29,8 @@ class Twitter_accounts():
         # Reference to collections and subsets
         self.account_subset = account_subset
         # References to storing sets and dictionaries
-        self.feature_dict = {}
         self.days = set()
         self.all_tweet_ids = set()
-        self.tw_per_day = {}
-        self.tw_per_account = {}
-        self.active_days_per_account = {}
-        self.id_lang_dict = {}
-        self.account_creation_date = {}
-        self.min_max_tweets_per_account = {}
-        self.user_for_entropy_time_sorted_dict = {}
-        # Set time storage for num tweets
-        min_month, max_month = self._enumerate_months_()
-        self.tw_per_month_per_account = {}
-        for month_num in range(min_month,max_month+1):
-            self.tw_per_month_per_account[month_num] = {}
-        # Set monthly storage for politicalness
-        self.min_max_tweets_per_account_per_month = {}
     
     
     def _enumerate_months_(self):
@@ -64,6 +45,24 @@ class Twitter_accounts():
         Main function. Iterates over a tweet collection and stores information.
         Possible functions include: tw, lang, days_account, creation, features
         '''
+        if 'tw' in functions and 'all' not in functions:
+            self.tw_per_month_per_account = {}
+            min_month, max_month = self._enumerate_months_()
+            for month_num in range(min_month,max_month+1):
+                self.tw_per_month_per_account[month_num] = {}
+            self.tw_per_account = {}
+            self.tw_per_day = {}
+        if 'lang' in functions and 'all' not in functions:
+            self.id_lang_dict = {}
+        if 'days_account' in functions and 'all' not in functions:
+            self.active_days_per_account = {}
+        if 'creation' in functions and 'all' not in functions:
+            self.account_creation_date = {}
+        if 'features' in functions and 'all' not in functions:
+            self.min_max_tweets_per_account = {}
+            self.min_max_tweets_per_account_per_month = {}
+            self.feature_dict = {}
+            self.user_for_entropy_time_sorted_dict = {}
         i = 0
         col_num = 0
         for collection in collections:
