@@ -43,7 +43,7 @@ class Twitter_accounts():
     def loop(self, collections, functions = None, max_tweets = 'all'):
         '''
         Main function. Iterates over a tweet collection and stores information.
-        Possible functions include: tw, lang, days_account, creation, features
+        Possible functions include: tw, lang, days_account, creation, features, html
         '''
         if 'tw' in functions and 'all' not in functions:
             self.tw_per_month_per_account = {}
@@ -59,6 +59,20 @@ class Twitter_accounts():
         if 'creation' in functions and 'all' not in functions:
             self.account_creation_date = {}
         if 'features' in functions and 'all' not in functions:
+            self.min_max_tweets_per_account = {}
+            self.min_max_tweets_per_account_per_month = {}
+            self.feature_dict = {}
+            self.user_for_entropy_time_sorted_dict = {}
+        if 'all' in functions:
+            self.tw_per_month_per_account = {}
+            min_month, max_month = self._enumerate_months_()
+            for month_num in range(min_month,max_month+1):
+                self.tw_per_month_per_account[month_num] = {}
+            self.tw_per_account = {}
+            self.tw_per_day = {}
+            self.id_lang_dict = {}
+            self.active_days_per_account = {}
+            self.account_creation_date = {}
             self.min_max_tweets_per_account = {}
             self.min_max_tweets_per_account_per_month = {}
             self.feature_dict = {}
