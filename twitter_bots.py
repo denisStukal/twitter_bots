@@ -1,5 +1,5 @@
 from pysmap import SmappDataset
-import datetime, time, re, math
+import datetime, time, re, math, os, requests, pickle
 import numpy as np
 
 class Twitter_accounts():
@@ -63,6 +63,8 @@ class Twitter_accounts():
             self.min_max_tweets_per_account_per_month = {}
             self.feature_dict = {}
             self.user_for_entropy_time_sorted_dict = {}
+        if 'html' in functions and 'all' not in functions:
+            self.static = {}
         if 'all' in functions:
             self.tw_per_month_per_account = {}
             min_month, max_month = self._enumerate_months_()
@@ -77,6 +79,7 @@ class Twitter_accounts():
             self.min_max_tweets_per_account_per_month = {}
             self.feature_dict = {}
             self.user_for_entropy_time_sorted_dict = {}
+            self.static = {}
         i = 0
         col_num = 0
         for collection in collections:
@@ -112,6 +115,8 @@ class Twitter_accounts():
                                     self.update_min_max_tweets_per_account_per_month(tw) # features
                                     self.update_primary_features_dict(tw, tw_date_stamp) # features 
                                     self.update_user_for_entropy_time_sorted_dict(tw) # features
+                                if 'html' in functions and 'all' not in functions:
+                                    self.update_static(tw)
                                 if 'all' in functions:
                                     self.update_tw_per_account(tw)      # tw
                                     self.update_tw_per_month_per_account(tw) # tw
@@ -702,6 +707,194 @@ class Twitter_accounts():
             if acc in subset:
                 output[acc] = selfdict[acc]
         return output
+    
+    
+    def update_static(self, tw):
+        user_id = tw['user']['id_str']
+        text = re.sub(r'(\n)|(\r)', ' ', tw['text'])
+        datList = tw['created_at'].split(' ')
+        dat2 = '%s %s %s %s' % (datList[1], datList[2], datList[5], datList[3])
+        dt = datetime.datetime.strptime(dat2, '%b %d %Y %H:%M:%S')
+        date_time = str(dt)
+        if user_id in self.static:
+            self.static[user_id][date_time] = {}
+            self.static[user_id][date_time]['text'] = text
+            self.static[user_id][date_time]['name'] = tw['user']['name']
+            self.static[user_id][date_time]['screen_name'] = tw['user']['screen_name']
+            self.static[user_id][date_time]['tw_id'] = tw['id_str']
+            self.static[user_id][date_time]['location'] = tw['user']['location']
+            self.static[user_id][date_time]['profile_background_image_url'] = tw['user']['profile_background_image_url']
+            self.static[user_id][date_time]['profile_image_url'] = tw['user']['profile_image_url']
+            self.static[user_id][date_time]['default_profile'] = tw['user']['default_profile']
+            self.static[user_id][date_time]['default_profile_image'] = tw['user']['default_profile_image']
+            self.static[user_id][date_time]['statuses_count'] = tw['user']['statuses_count']
+            self.static[user_id][date_time]['followers_count'] = tw['user']['followers_count']
+            self.static[user_id][date_time]['friends_count'] = tw['user']['friends_count']
+            creation_list = tw['created_at'].split(' ')
+            creation2 = '%s %s %s %s' % (creation_list[1], creation_list[2], creation_list[5], creation_list[3])
+            creation_dt = datetime.datetime.strptime(creation2, '%b %d %Y %H:%M:%S')
+            creation_date_time = str(creation_dt)
+            self.static[user_id][date_time]['created_at'] = creation_date_time
+            if tw['user']['description']:
+                descr = re.sub(r'\n|\r|\t', ' ', tw['user']['description'])
+                self.static[user_id][date_time]['description'] = descr
+            else:
+                self.static[user_id][date_time]['description'] = 'NA'
+            if tw['user']['url']:
+                self.static[user_id][date_time]['url'] = tw['user']['url']
+            else:
+                self.static[user_id][date_time]['url'] = 'NA'
+            self.static[user_id][date_time]['favourites_count'] = tw['user']['favourites_count']
+            self.static[user_id][date_time]['listed_count'] = tw['user']['listed_count']
+        else:
+            self.static[user_id] = {}
+            self.static[user_id][date_time] = {}
+            self.static[user_id][date_time]['text'] = text
+            self.static[user_id][date_time]['name'] = tw['user']['name']
+            self.static[user_id][date_time]['screen_name'] = tw['user']['screen_name']
+            self.static[user_id][date_time]['tw_id'] = tw['id_str']
+            self.static[user_id][date_time]['location'] = tw['user']['location']
+            self.static[user_id][date_time]['profile_background_image_url'] = tw['user']['profile_background_image_url']
+            self.static[user_id][date_time]['profile_image_url'] = tw['user']['profile_image_url']
+            self.static[user_id][date_time]['default_profile'] = tw['user']['default_profile']
+            self.static[user_id][date_time]['default_profile_image'] = tw['user']['default_profile_image']
+            self.static[user_id][date_time]['statuses_count'] = tw['user']['statuses_count']
+            self.static[user_id][date_time]['followers_count'] = tw['user']['followers_count']
+            self.static[user_id][date_time]['friends_count'] = tw['user']['friends_count']
+            creation_list = tw['created_at'].split(' ')
+            creation2 = '%s %s %s %s' % (creation_list[1], creation_list[2], creation_list[5], creation_list[3])
+            creation_dt = datetime.datetime.strptime(creation2, '%b %d %Y %H:%M:%S')
+            creation_date_time = str(creation_dt)
+            self.static[user_id][date_time]['created_at'] = creation_date_time
+            if tw['user']['description']:
+                descr = re.sub(r'\n|\r|\t', ' ', tw['user']['description'])
+                self.static[user_id][date_time]['description'] = descr
+            else:
+                self.static[user_id][date_time]['description'] = 'NA'
+            if tw['user']['url']:
+                self.static[user_id][date_time]['url'] = tw['user']['url']
+            else:
+                self.static[user_id][date_time]['url'] = 'NA'
+            self.static[user_id][date_time]['favourites_count'] = tw['user']['favourites_count']
+            self.static[user_id][date_time]['listed_count'] = tw['user']['listed_count']
+    
+    
+    def make_html(self, path, min_num_tw, max_num_of_tweets = 100):
+        # check if path ends with a slash
+        if path[len(path)-1] != '/':
+            path = path + '/'
+        # store latest available url etc for each id
+        dic = {}
+        for id in self.static:
+            if len(self.static[id]) >= min_num_tw:
+                dic[id] = {}
+                for date_time in self.static[id]:
+                    day = date_time.split()[0]
+                    if day not in dic[id]:
+                        dic[id][day] = {}
+                    time = date_time.split()[1]
+                    dic[id][day][time] = {}
+                    dic[id][day][time]['tweet'] = self.static[id][date_time]['text']
+                    dic[id][day][time]['name'] = self.static[id][date_time]['name']
+                    dic[id][day][time]['screen_name'] = self.static[id][date_time]['screen_name']
+                    dic[id][day][time]['tweet_id'] = self.static[id][date_time]['tw_id']
+                    dic[id][day][time]['full_time'] = date_time
+                    dic[id][day][time]['location'] = self.static[id][date_time]['location']
+                    dic[id][day][time]['profile_background_image_url'] = self.static[id][date_time]['profile_background_image_url']
+                    dic[id][day][time]['profile_image_url'] = self.static[id][date_time]['profile_image_url']
+                    dic[id][day][time]['statuses_count'] = self.static[id][date_time]['statuses_count']
+                    dic[id][day][time]['followers_count'] = self.static[id][date_time]['followers_count']
+                    dic[id][day][time]['friends_count'] = self.static[id][date_time]['friends_count']
+                    dic[id][day][time]['created_at'] = self.static[id][date_time]['created_at']
+                    dic[id][day][time]['description'] = self.static[id][date_time]['description']
+                    dic[id][day][time]['url'] = self.static[id][date_time]['url']
+                    dic[id][day][time]['favourites_count'] = self.static[id][date_time]['favourites_count']
+                    dic[id][day][time]['listed_count'] = self.static[id][date_time]['listed_count']
+        # start writing out htmls
+        for id in dic:
+            profile_background_image_url = " "
+            profile_image_url = " "
+            name = " "
+            screen_name = " "
+            location = " "
+            statuses_count = " "
+            followers_count = " "
+            friends_count = " "
+            created_at = " "
+            description = " "
+            url = " "
+            favourites_count = " "
+            listed_count = " "
+            is_there_default_image = False
+            is_there_default_background = False
+            # start with the latest day and time
+            counter = 0
+            for day in sorted(dic[id], reverse = True):
+                for time in sorted(dic[id][day], reverse = True):
+                    counter += 1
+                    if counter <= max_num_of_tweets:
+                        candidate_background_image_url = dic[id][day][time]['profile_background_image_url']
+                        candidate_image_url = dic[id][day][time]['profile_image_url']
+                        if profile_background_image_url == ' ' and candidate_background_image_url != "NA":
+                            if re.search(r'abs.twimg.com/images/themes/theme1/bg', candidate_background_image_url):
+                                is_there_default_background = True
+                            if not re.search(r'abs.twimg.com/images/themes/theme1/bg', candidate_background_image_url):
+                                background_url_check = requests.get(candidate_background_image_url)
+                                if background_url_check.ok:
+                                    profile_background_image_url = candidate_background_image_url
+                        if profile_image_url == " " and candidate_image_url != "NA":
+                            if re.search(r'default_profile_images/default_profile', candidate_image_url):
+                                is_there_default_image = True
+                            if not re.search(r'default_profile_images/default_profile', candidate_image_url):
+                                image_url_check = requests.get(candidate_image_url)
+                                if image_url_check.ok:
+                                    profile_image_url = candidate_image_url
+                        if url == " " and dic[id][day][time]['url'] != "NA":
+                            url = dic[id][day][time]['url']
+                        if location == " " and dic[id][day][time]['location'] != "NA":
+                            location = dic[id][day][time]['location']
+                        if description == " " and dic[id][day][time]['description'] != "NA": 
+                            description = dic[id][day][time]['description']
+                        name = dic[id][day][time]['name']
+                        screen_name =  dic[id][day][time]['screen_name']
+                        statuses_count = dic[id][day][time]['statuses_count']
+                        followers_count = dic[id][day][time]['followers_count']
+                        friends_count = dic[id][day][time]['friends_count']
+                        full_creation_date = datetime.datetime.strptime(dic[id][day][time]['created_at'], '%Y-%m-%d %H:%M:%S')
+                        created_at = '{0} {1},  {2}'.format(full_creation_date.strftime("%B"), full_creation_date.strftime("%d"), full_creation_date.strftime("%Y"))
+                        favourites_count = dic[id][day][time]['favourites_count']
+                        listed_count = dic[id][day][time]['listed_count']
+                    if profile_image_url == " " and is_there_default_image:
+                        profile_image_url = 'http://abs.twimg.com/sticky/default_profile_images/default_profile_1_normal.png'
+                    if profile_background_image_url == " " and is_there_default_background:
+                        profile_background_image_url = 'http://abs.twimg.com/images/themes/theme1/bg.png'
+            outp = open(path + 'html_id_{0}_screenname_{1}.html'.format(id, screen_name), 'w')
+            outp.write('<html><head><style type="text/css"> #left { margin: 0; padding: 0; position: absolute; left: 20; top: 150; width: 50%; } #right { margin: 0; padding: 0; position: absolute; right: 0; top: 150; width: 50%; }  </style> </head> <body bgcolor="#F5F5F5"> <img src="' + profile_background_image_url + '" style="width:30%; height:20%" /> <div id="left"> <table cellspacing="15px"> <tr> <td > <img src="' + profile_image_url + '" width="80" heigth="80"/> </td> </tr> <tr> <td > <font size="5"> <b> ' + str(name) + ' </b> </font> </td> </tr> <tr> <td> <font color="#808080"> @' + str(screen_name) +' </font> </td> </tr> <tr> <td> ' + str(description) +'  </td> </tr> <tr> <td> <img src="https://www.neustar.biz/base/img/icon-locate-big-gry.png" width="15" height="15"/> ' + location + ' </td> </tr> <tr><td> <img src="https://cdn2.iconfinder.com/data/icons/web/512/Link-512.png" width="15" height="15" /> <a href="' + url + '"> ' + url + ' </a> </td></tr><tr><td> <img src="http://iconshow.me/media/images/Mixed/line-icon/png/256/calendar-256.png" width="15" height="15" /> Дата регистрации: ' + str(created_at) + ' </td></tr></table> </div> <div id="right"><table><tr><td align="center" width="15%"> <font color="#808080">Твиты</font> </td> <td align="center" width="15%"> <font color="#808080"> Читаемые </font> </td> <td align="center" width="15%"> <font color="#808080"> Читатели </font> </td> <td align="center" width="15%"> <font color="#808080"> Нравится </font> </td> <td align="center" width="15%"> <font color="#808080"> Списки </font> </td> </tr><tr><td align="center" width="15%"> <font color="#4169E0"> <b>' + str(statuses_count) + '</b> </font>  </td> <td align="center" width="15%">  <font color="#4169E0"> <b>' + str(friends_count) + ' </b></font> </td> <td align="center" width="15%">  <font color="#4169E0"> <b>' + str(followers_count) + '</b></font>  </td> <td align="center" width="15%">  <font color="#4169E0"> <b>' + str(favourites_count) + '</b></font>  </td> <td align="center" width="15%">  <font color="#4169E0"> <b>' + str(listed_count) + '</b></font>  </td> </tr> </table>')
+            # write out tweets to html
+            counter = 0
+            for day in sorted(dic[id], reverse = True):
+                for time in sorted(dic[id][day], reverse = True):
+                    counter += 1
+                    if counter <= max_num_of_tweets:
+                        text = dic[id][day][time]['tweet']
+                        name = dic[id][day][time]['name']
+                        screen_name = dic[id][day][time]['screen_name']
+                        tweet_id = dic[id][day][time]['tweet_id']
+                        full_time = dic[id][day][time]['full_time']
+                        outp.write('<blockquote class="twitter-tweet" width="450"><p> ' + text + '</p> ' + name + " (@" + screen_name + ") <a href='https://twitter.com/" + screen_name + '/status/' + tweet_id + "'>" + full_time + '</a></blockquote>' + " <script src='https://platform.twitter.com/widgets.js' charset='utf-8'></script>" + '\n')
+            outp.write('</div> </body> </html>')  
+            outp.close()
+
+
+
+
+
+
+
+
+
+
+
 
 
 
