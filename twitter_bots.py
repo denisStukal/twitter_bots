@@ -52,7 +52,6 @@ class Twitter_accounts():
                 self.tw_per_month_per_account[month_num] = {}
             self.tw_per_account = {}
             self.tw_per_day = {}
-        if 'lang' in functions and 'all' not in functions:
             self.id_lang_dict = {}
         if 'days_account' in functions and 'all' not in functions:
             self.active_days_per_account = {}
@@ -104,7 +103,6 @@ class Twitter_accounts():
                                     self.update_tw_per_account(tw)      # tw
                                     self.update_tw_per_month_per_account(tw) # tw
                                     self.update_tw_per_day(tw, tw_date_stamp)  # tw
-                                if 'lang' in functions and 'all' not in functions:
                                     self.update_languages(tw)
                                 if 'days_account' in functions and 'all' not in functions:
                                     self.update_active_days(tw, tw_date_stamp)
