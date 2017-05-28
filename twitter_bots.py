@@ -759,7 +759,7 @@ class Twitter_accounts():
             self.static[user_id][date_time]['statuses_count'] = tw['user']['statuses_count']
             self.static[user_id][date_time]['followers_count'] = tw['user']['followers_count']
             self.static[user_id][date_time]['friends_count'] = tw['user']['friends_count']
-            creation_list = tw['created_at'].split(' ')
+            creation_list = tw['user']['created_at'].split(' ')
             creation2 = '%s %s %s %s' % (creation_list[1], creation_list[2], creation_list[5], creation_list[3])
             creation_dt = datetime.datetime.strptime(creation2, '%b %d %Y %H:%M:%S')
             creation_date_time = str(creation_dt)
@@ -837,16 +837,22 @@ class Twitter_accounts():
                             if re.search(r'abs.twimg.com/images/themes/theme1/bg', candidate_background_image_url):
                                 is_there_default_background = True
                             if not re.search(r'abs.twimg.com/images/themes/theme1/bg', candidate_background_image_url):
-                                background_url_check = requests.get(candidate_background_image_url)
-                                if background_url_check.ok:
-                                    profile_background_image_url = candidate_background_image_url
+                                try: 
+                                    background_url_check = requests.get(candidate_background_image_url)
+                                    if background_url_check.ok:
+                                        profile_background_image_url = candidate_background_image_url
+                                except:
+                                    pass
                         if profile_image_url == " " and candidate_image_url != "NA":
                             if re.search(r'default_profile_images/default_profile', candidate_image_url):
                                 is_there_default_image = True
                             if not re.search(r'default_profile_images/default_profile', candidate_image_url):
-                                image_url_check = requests.get(candidate_image_url)
-                                if image_url_check.ok:
-                                    profile_image_url = candidate_image_url
+                                try:
+                                    image_url_check = requests.get(candidate_image_url)
+                                    if image_url_check.ok:
+                                        profile_image_url = candidate_image_url
+                                except:
+                                    pass
                         if url == " " and dic[id][day][time]['url'] != "NA":
                             url = dic[id][day][time]['url']
                         if location == " " and dic[id][day][time]['location'] != "NA":
@@ -867,7 +873,7 @@ class Twitter_accounts():
                     if profile_background_image_url == " " and is_there_default_background:
                         profile_background_image_url = 'http://abs.twimg.com/images/themes/theme1/bg.png'
             outp = open(path + 'html_id_{0}_screenname_{1}.html'.format(id, screen_name), 'w')
-            outp.write('<html><head><style type="text/css"> #left { margin: 0; padding: 0; position: absolute; left: 20; top: 150; width: 50%; } #right { margin: 0; padding: 0; position: absolute; right: 0; top: 150; width: 50%; }  </style> </head> <body bgcolor="#F5F5F5"> <img src="' + profile_background_image_url + '" style="width:30%; height:20%" /> <div id="left"> <table cellspacing="15px"> <tr> <td > <img src="' + profile_image_url + '" width="80" heigth="80"/> </td> </tr> <tr> <td > <font size="5"> <b> ' + str(name) + ' </b> </font> </td> </tr> <tr> <td> <font color="#808080"> @' + str(screen_name) +' </font> </td> </tr> <tr> <td> ' + str(description) +'  </td> </tr> <tr> <td> <img src="https://www.neustar.biz/base/img/icon-locate-big-gry.png" width="15" height="15"/> ' + location + ' </td> </tr> <tr><td> <img src="https://cdn2.iconfinder.com/data/icons/web/512/Link-512.png" width="15" height="15" /> <a href="' + url + '"> ' + url + ' </a> </td></tr><tr><td> <img src="http://iconshow.me/media/images/Mixed/line-icon/png/256/calendar-256.png" width="15" height="15" /> Дата регистрации: ' + str(created_at) + ' </td></tr></table> </div> <div id="right"><table><tr><td align="center" width="15%"> <font color="#808080">Твиты</font> </td> <td align="center" width="15%"> <font color="#808080"> Читаемые </font> </td> <td align="center" width="15%"> <font color="#808080"> Читатели </font> </td> <td align="center" width="15%"> <font color="#808080"> Нравится </font> </td> <td align="center" width="15%"> <font color="#808080"> Списки </font> </td> </tr><tr><td align="center" width="15%"> <font color="#4169E0"> <b>' + str(statuses_count) + '</b> </font>  </td> <td align="center" width="15%">  <font color="#4169E0"> <b>' + str(friends_count) + ' </b></font> </td> <td align="center" width="15%">  <font color="#4169E0"> <b>' + str(followers_count) + '</b></font>  </td> <td align="center" width="15%">  <font color="#4169E0"> <b>' + str(favourites_count) + '</b></font>  </td> <td align="center" width="15%">  <font color="#4169E0"> <b>' + str(listed_count) + '</b></font>  </td> </tr> </table>')
+            outp.write('<html><head><style type="text/css"> #left { margin: 0; padding: 0; position: absolute; left: 20; top: 150; width: 50%; } #right { margin: 0; padding: 0; position: absolute; right: 0; top: 150; width: 50%; }  </style> </head> <body bgcolor="#F5F5F5"> <img src="' + profile_background_image_url + '" style="width:30%; height:20%" /> <div id="left"> <table cellspacing="15px"> <tr> <td > <img src="' + profile_image_url + '" width="80" heigth="80"/> </td> </tr> <tr> <td > <font size="5"> <b> ' + str(name) + ' </b> </font> </td> </tr> <tr> <td> <font color="#808080"> @' + str(screen_name) +' </font> </td> </tr> <tr> <td> ' + str(description) +'  </td> </tr> <tr> <td> <img src="https://www.neustar.biz/base/img/icon-locate-big-gry.png" width="15" height="15"/> ' + str(location) + ' </td> </tr> <tr><td> <img src="https://cdn2.iconfinder.com/data/icons/web/512/Link-512.png" width="15" height="15" /> <a href="' + url + '"> ' + url + ' </a> </td></tr><tr><td> <img src="http://iconshow.me/media/images/Mixed/line-icon/png/256/calendar-256.png" width="15" height="15" /> Дата регистрации: ' + str(created_at) + ' </td></tr></table> </div> <div id="right"><table><tr><td align="center" width="15%"> <font color="#808080">Твиты</font> </td> <td align="center" width="15%"> <font color="#808080"> Читаемые </font> </td> <td align="center" width="15%"> <font color="#808080"> Читатели </font> </td> <td align="center" width="15%"> <font color="#808080"> Нравится </font> </td> <td align="center" width="15%"> <font color="#808080"> Списки </font> </td> </tr><tr><td align="center" width="15%"> <font color="#4169E0"> <b>' + str(statuses_count) + '</b> </font>  </td> <td align="center" width="15%">  <font color="#4169E0"> <b>' + str(friends_count) + ' </b></font> </td> <td align="center" width="15%">  <font color="#4169E0"> <b>' + str(followers_count) + '</b></font>  </td> <td align="center" width="15%">  <font color="#4169E0"> <b>' + str(favourites_count) + '</b></font>  </td> <td align="center" width="15%">  <font color="#4169E0"> <b>' + str(listed_count) + '</b></font>  </td> </tr> </table>')
             # write out tweets to html
             counter = 0
             for day in sorted(dic[id], reverse = True):
