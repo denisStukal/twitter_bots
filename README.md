@@ -1,4 +1,5 @@
-#twitter_bots
+twitter_bots
+===
 
 This is a package for preprocessing Twitter data collections in order to perform bot detection on Twitter using the methodology described in:
 
@@ -8,12 +9,14 @@ It also allows you to create static Twitter snapshots for reproducible Twitter a
 * Sanovich, Sergey, Denis Stukal, and Joshua A. Tucker. (2017). “Turning the Virtual Tables: Government Strategies for Addressing Online Opposition with an Application to Russia.” *Forthcoming in Comparative Politics.*
 * Stukal, Denis, Sergey Sanovich, Richard Bonneau, and Joshua A. Tucker. (2017). "Detecting Political Bots on Russian Twitter." *Forthcoming in Big Data*
 
-###Installation
+Installation
+---
 1. Clone or download this repository
 
 2. Use `pip install` to install `pysmap` and `numpy`
 
-###Making Static Twitter Snapshots
+Making Static Twitter Snapshots
+---
 
 This package allows one to process Twitter data stored in JSON format. Suppose, you have Twitter data from April 1 to April 3, 2017 stored in /Users/mydata.json, and the code repository is stored as /Users/twitter_bots.
 
