@@ -6,7 +6,7 @@ class Twitter_accounts():
     
     def __init__(self, dates, account_subset = None):
         '''
-        Collections is a list of collections. Dates as yyyy-mm-dd strings
+        Collections as a list of collections. Dates as yyyy-mm-dd strings
         '''
         # Time-related attributes
         valid_dates = []
@@ -34,51 +34,67 @@ class Twitter_accounts():
     
     
     def _enumerate_months_(self):
+        '''
+        Internal function: enumerates of months of available data. 
+        Returns a tuple of min and max month numbers.
+        '''
         year_dif = self.end_year - self.start_year
         max_month = year_dif*12 + self.end_month
         min_month = self.start_month
         return (min_month, max_month)
     
     
+    def _initialize_storage_(self, functions = None):
+        '''
+        Internal function: creates storing dics for loop(). functions argument is passed to loop()
+        '''
+        if functions is not None:
+            if 'all' in functions:
+                self.tw_per_month_per_account = {}
+                min_month, max_month = self._enumerate_months_()
+                for month_num in range(min_month,max_month+1):
+                    self.tw_per_month_per_account[month_num] = {}
+                self.tw_per_account = {}
+                self.tw_per_day = {}
+                self.id_lang_dict = {}
+                self.active_days_per_account = {}
+                self.account_creation_date = {}
+                self.min_max_tweets_per_account = {}
+                self.min_max_tweets_per_account_per_month = {}
+                self.feature_dict = {}
+                self.user_for_entropy_time_sorted_dict = {}
+                self.static = {}
+            else:
+                if 'tw' in functions:
+                    self.tw_per_month_per_account = {}
+                    min_month, max_month = self._enumerate_months_()
+                    for month_num in range(min_month,max_month+1):
+                        self.tw_per_month_per_account[month_num] = {}
+                    self.tw_per_account = {}
+                    self.tw_per_day = {}
+                    self.id_lang_dict = {}
+                if 'days_account' in functions:
+                    self.active_days_per_account = {}
+                if 'creation' in functions:
+                    self.account_creation_date = {}
+                if 'features' in functions:
+                    self.tw_per_account = {}
+                    self.min_max_tweets_per_account = {}
+                    self.min_max_tweets_per_account_per_month = {}
+                    self.feature_dict = {}
+                    self.user_for_entropy_time_sorted_dict = {}
+                if 'html' in functions:
+                    self.static = {}
+    
+    
     def loop(self, collections, functions = None, max_tweets = 'all'):
         '''
-        Main function. Iterates over a tweet collection and stores information.
-        Possible functions include: tw, lang, days_account, creation, features, html
+        Main function. Iterates over tweet collections and stores information.
+        Possible functions include: tw, lang, days_account, creation, features, html.
+        Returns None.
         '''
-        if 'tw' in functions and 'all' not in functions:
-            self.tw_per_month_per_account = {}
-            min_month, max_month = self._enumerate_months_()
-            for month_num in range(min_month,max_month+1):
-                self.tw_per_month_per_account[month_num] = {}
-            self.tw_per_account = {}
-            self.tw_per_day = {}
-            self.id_lang_dict = {}
-        if 'days_account' in functions and 'all' not in functions:
-            self.active_days_per_account = {}
-        if 'creation' in functions and 'all' not in functions:
-            self.account_creation_date = {}
-        if 'features' in functions and 'all' not in functions:
-            self.min_max_tweets_per_account = {}
-            self.min_max_tweets_per_account_per_month = {}
-            self.feature_dict = {}
-            self.user_for_entropy_time_sorted_dict = {}
-        if 'html' in functions and 'all' not in functions:
-            self.static = {}
-        if 'all' in functions:
-            self.tw_per_month_per_account = {}
-            min_month, max_month = self._enumerate_months_()
-            for month_num in range(min_month,max_month+1):
-                self.tw_per_month_per_account[month_num] = {}
-            self.tw_per_account = {}
-            self.tw_per_day = {}
-            self.id_lang_dict = {}
-            self.active_days_per_account = {}
-            self.account_creation_date = {}
-            self.min_max_tweets_per_account = {}
-            self.min_max_tweets_per_account_per_month = {}
-            self.feature_dict = {}
-            self.user_for_entropy_time_sorted_dict = {}
-            self.static = {}
+        self._initialize_storage_(functions = functions)
+        # Start looping
         i = 0
         col_num = 0
         for collection in collections:
@@ -99,22 +115,6 @@ class Twitter_accounts():
                             tw_date_stamp = self.get_tw_date_stamp(tw)
                             self.update_days(tw, tw_date_stamp)
                             if functions is not None:
-                                if 'tw' in functions and 'all' not in functions:
-                                    self.update_tw_per_account(tw)      # tw
-                                    self.update_tw_per_month_per_account(tw) # tw
-                                    self.update_tw_per_day(tw, tw_date_stamp)  # tw
-                                    self.update_languages(tw)
-                                if 'days_account' in functions and 'all' not in functions:
-                                    self.update_active_days(tw, tw_date_stamp)
-                                if 'creation' in functions and 'all' not in functions:
-                                    self.update_account_creation_date(tw)  # creation
-                                if 'features' in functions and 'all' not in functions:
-                                    self.update_min_max_tweets_per_account(tw)  # features
-                                    self.update_min_max_tweets_per_account_per_month(tw) # features
-                                    self.update_primary_features_dict(tw, tw_date_stamp) # features 
-                                    self.update_user_for_entropy_time_sorted_dict(tw) # features
-                                if 'html' in functions and 'all' not in functions:
-                                    self.update_static(tw)
                                 if 'all' in functions:
                                     self.update_tw_per_account(tw)      # tw
                                     self.update_tw_per_month_per_account(tw) # tw
@@ -126,9 +126,29 @@ class Twitter_accounts():
                                     self.update_min_max_tweets_per_account_per_month(tw) # features
                                     self.update_primary_features_dict(tw, tw_date_stamp) # features 
                                     self.update_user_for_entropy_time_sorted_dict(tw) # features
+                                else:
+                                    if 'tw' in functions :
+                                        self.update_tw_per_account(tw)      # tw/features
+                                        self.update_tw_per_month_per_account(tw) # tw
+                                        self.update_tw_per_day(tw, tw_date_stamp)  # tw
+                                        self.update_languages(tw)
+                                    if 'days_account' in functions:
+                                        self.update_active_days(tw, tw_date_stamp)
+                                    if 'creation' in functions:
+                                        self.update_account_creation_date(tw)  # creation
+                                    if 'features' in functions:
+                                        self.update_tw_per_account(tw) # tw/features
+                                        self.update_min_max_tweets_per_account(tw)  # features
+                                        self.update_primary_features_dict(tw, tw_date_stamp) # features 
+                                        self.update_user_for_entropy_time_sorted_dict(tw) # features
+                                    if 'html' in functions:
+                                        self.update_static(tw)
     
     
     def is_in_time_range(self, tw):
+        '''
+        Returns Boolean. True if a tweet creation date in the range of dates specified when instantiating a class object.
+        '''
         tw_created_list = tw['created_at'].split(' ')
         time_obj = time.strptime('%s %s %s' % (tw_created_list[1], tw_created_list[2], tw_created_list[5]), "%b %d %Y")
         flag = False
@@ -138,11 +158,54 @@ class Twitter_accounts():
         return flag
     
     
+    def get_tw_date_stamp(self, tw):
+        '''
+        Returns a string with the date stamp for the current tweet in the form yyyy-mm-dd.
+        '''
+        tw_created_list = tw['created_at'].split(' ')
+        time_obj = time.strptime('%s %s %s' % (tw_created_list[1], tw_created_list[2], tw_created_list[5]), "%b %d %Y")
+        if time_obj[1] < 10:
+            month = '0' + str(time_obj[1])
+        else:
+            month = str(time_obj[1])
+        if time_obj[2] < 10:
+            day = '0' + str(time_obj[2])
+        else:
+            day = str(time_obj[2])
+        date_stamp = str(time_obj[0]) + '-' + month + '-' + day
+        return date_stamp
+    
+    
+    def get_acc_date_stamp(self, tw):
+        '''
+        Returns a string with the date stamp (yyyy-mm-dd) for the creation date of the userID who wrote the current tweet.
+        '''
+        tw_created_list = tw['user']['created_at'].split(' ')
+        time_obj = time.strptime('%s %s %s' % (tw_created_list[1], tw_created_list[2], tw_created_list[5]), "%b %d %Y")
+        if time_obj[1] < 10:
+            month = '0' + str(time_obj[1])
+        else:
+            month = str(time_obj[1])
+        if time_obj[2] < 10:
+            day = '0' + str(time_obj[2])
+        else:
+            day = str(time_obj[2])
+        date_stamp = str(time_obj[0]) + '-' + month + '-' + day
+        return date_stamp
+    
+    
     def update_days(self, tw, date_stamp):
+        '''
+        Adds date stamp for a tweets to a set of all date stamps found.
+        '''
         self.days.add(date_stamp)
     
     
     def update_tw_per_account(self, tw):
+        '''
+        Updates the count of tweets for the userID that produced the current tweet.
+        Returns None. 
+        '''
         if tw['user']['id_str'] not in self.tw_per_account:
             self.tw_per_account[tw['user']['id_str']] = 1
         else:
@@ -150,6 +213,10 @@ class Twitter_accounts():
     
     
     def update_tw_per_month_per_account(self, tw):
+        '''
+        Updates the monthly count of tweets for the userID that produced the current tweet.
+        Returns None. 
+        '''
         tw_created_list = tw['created_at'].split(' ')
         time_obj = time.strptime('%s %s %s' % (tw_created_list[1], tw_created_list[2], tw_created_list[5]), "%b %d %Y")
         year_dif = time_obj[0] - self.start_year
@@ -161,45 +228,53 @@ class Twitter_accounts():
     
     
     def update_languages(self, tw):
+        '''
+        Updates tweet and account language dictionaries, i.e. the counts of tweets written in specific language and with account interface in specific language.
+        Returns None. 
+        '''
+        # Is userID in language dictionary?
         if tw['user']['id_str'] not in self.id_lang_dict:
             self.id_lang_dict[tw['user']['id_str']] = {}
             self.id_lang_dict[tw['user']['id_str']]['acc_lang'] = {}
             self.id_lang_dict[tw['user']['id_str']]['tw_lang'] = {}
-            #self.id_lang_dict[tw['user']['id_str']]['tw_count'] = 0
-        #self.id_lang_dict[tw['user']['id_str']]['tw_count'] += 1
+        # Update the number of tweets written with the account having a specific interface language 
         if tw['user']['lang'] not in self.id_lang_dict[tw['user']['id_str']]['acc_lang']:
             self.id_lang_dict[tw['user']['id_str']]['acc_lang'][tw['user']['lang']] = 1
         else:
             self.id_lang_dict[tw['user']['id_str']]['acc_lang'][tw['user']['lang']] += 1
+        # If tweet has detected language, update the number of tweets in a specific  language 
         if 'lang' in tw:
-            if tw['lang'] not in self.id_lang_dict[tw['user']['id_str']]['tw_lang']: # ?
+            if tw['lang'] not in self.id_lang_dict[tw['user']['id_str']]['tw_lang']:
                 self.id_lang_dict[tw['user']['id_str']]['tw_lang'][tw['lang']] = 1
             else:
                 self.id_lang_dict[tw['user']['id_str']]['tw_lang'][tw['lang']] += 1
     
     
     def update_active_days(self, tw, date_stamp):
+        '''
+        Update the set of day stamps for which the userID who wrote the current tweet has tweets in the collection.
+        Returns None.
+        '''
         if tw['user']['id_str'] not in self.active_days_per_account:
             self.active_days_per_account[tw['user']['id_str']] = set()
         self.active_days_per_account[tw['user']['id_str']].add(date_stamp)
     
     
-    def get_tw_date_stamp(self, tw):
-        tw_created_list = tw['created_at'].split(' ')
-        time_obj = time.strptime('%s %s %s' % (tw_created_list[1], tw_created_list[2], tw_created_list[5]), "%b %d %Y")
-        date_stamp = str(time_obj[0]) + '-' + str(time_obj[1]) + '-' + str(time_obj[2])
-        return date_stamp
-    
-    
     def update_account_creation_date(self, tw):
-        tw_created_list = tw['user']['created_at'].split(' ')
-        time_obj = time.strptime('%s %s %s' % (tw_created_list[1], tw_created_list[2], tw_created_list[5]), "%b %d %Y")
-        date_stamp = str(time_obj[0]) + '-' + str(time_obj[1]) + '-' + str(time_obj[2])
+        '''
+        Add account creation data for userID that was not found in the collection before. 
+        Returns None.
+        '''
+        date_stamp = get_acc_date_stamp(tw)
         if tw['user']['id_str'] not in self.account_creation_date:
             self.account_creation_date[tw['user']['id_str']] = date_stamp
     
     
     def update_tw_per_day(self, tw, date_stamp):
+        '''
+        Updates tweet count per day.
+        Returns None
+        '''
         if date_stamp not in self.tw_per_day:
             self.tw_per_day[date_stamp] = 1
         else:
@@ -207,6 +282,9 @@ class Twitter_accounts():
     
     
     def get_interface_language_percentages(self, language):
+        '''
+        Returns dictionary with percentages of tweets associated with different account interface languages.
+        '''
         output = {}
         for account in self.id_lang_dict:
             if language in self.id_lang_dict[account]['acc_lang']:
@@ -217,6 +295,9 @@ class Twitter_accounts():
     
     
     def get_tweet_language_percentages(self, language):
+        '''
+        Returns dictionary with percentages of tweets in different languages.
+        '''
         output = {}
         for account in self.id_lang_dict:
             if language in self.id_lang_dict[account]['tw_lang']:
@@ -229,7 +310,8 @@ class Twitter_accounts():
     def update_min_max_tweets_per_account(self, tw):
         '''
         For every account in the collection, computes the min and max number of tweets during data collection.
-        Used to compute politicalness
+        Used to compute politicalness.
+        Returns None.
         '''
         if tw['user']['id_str'] not in self.min_max_tweets_per_account:
             self.min_max_tweets_per_account[tw['user']['id_str']] = {}
@@ -243,6 +325,12 @@ class Twitter_accounts():
     
     
     def make_politicalness(self):
+        '''
+        Produces politicalness dictionary. 
+        Politicalness is defined as the numbrer of an accounts' tweets in the collection over the total number of tweets the account posted during data collection.
+        The total number of accounts is approximated by subtracting the smallest total number of tweets from the largest total number of tweets from a given account's metadata. 
+        Returns None.
+        '''
         self.politicalness = {}
         # Get total number of tweets during data collection
         for el in self.min_max_tweets_per_account:
@@ -259,6 +347,12 @@ class Twitter_accounts():
     
     
     def get_politicalness(self):
+        '''
+        Produces politicalness dictionary. 
+        Politicalness is defined as the numbrer of an accounts' tweets in the collection over the total number of tweets the account posted during data collection.
+        The total number of accounts is approximated by subtracting the smallest total number of tweets from the largest total number of tweets from a given account's metadata. 
+        Returns dictionary.
+        '''
         politicalness = {}
         # Get total number of tweets during data collection
         for el in self.min_max_tweets_per_account:
@@ -276,6 +370,10 @@ class Twitter_accounts():
 
     
     def update_min_max_tweets_per_account_per_month(self, tw):
+        '''
+        Updates the min and max number of tweets per month for a given account.
+        Returns None.
+        '''
         # set up storage for a new user_id
         if tw['user']['id'] not in  self.min_max_tweets_per_account_per_month:
             self.min_max_tweets_per_account_per_month[tw['user']['id']] = {}
@@ -306,6 +404,10 @@ class Twitter_accounts():
     
     
     def make_politicalness_per_account_per_month(self):
+        '''
+        Computes account's politicalness per month. 
+        Returns None. 
+        '''
         self.politicalness_per_account_per_month = {}
         # Get total number of tweets per month
         for acc in self.min_max_tweets_per_account_per_month:
@@ -326,6 +428,10 @@ class Twitter_accounts():
     
     
     def get_politicalness_per_account_per_month(self):
+        '''
+        Computes account's politicalness per month. 
+        Returns dictionary. 
+        '''
         politicalness_per_account_per_month = {}
         # Get total number of tweets per month
         for acc in self.min_max_tweets_per_account_per_month:
@@ -346,41 +452,49 @@ class Twitter_accounts():
         return politicalness_per_account_per_month
     
     
+    def _is_retweet_(self, tweet):
+        '''
+        Takes a python-native tweet object (a dict). Returns True if a tweet is any kind of retweet.
+        Returns Boolean.
+        '''
+        import re
+        rt_manual_pattern = r"^RT @"
+        rt_partial_pattern = r" RT @"
+        if 'retweeted_status' in tweet:
+            return True
+        elif re.search(rt_manual_pattern, tweet['text']):
+            return True
+        elif re.search(rt_partial_pattern, tweet['text']):
+            return True
+        return False
+    
+    
+    def _is_there_number_except_year_(self, screen_name): 
+        '''
+        Used in make_primary_features() to analyze user sceen_name. 
+        Returns Boolean.
+        '''
+        if re.search(r'[0-9]+', screen_name):
+            if not int(screen_name[re.search(r'[0-9]+', screen_name).start():re.search(r'[0-9]+', screen_name).end()]) >= 50 or not int(screen_name[re.search(r'[0-9]+', screen_name).start():re.search(r'[0-9]+', screen_name).end()]) <= 99:
+                return True
+        return False
+    
+    
+    def _is_there_more_than_1_word_(self, name):
+        '''
+        Used in make_primary_features() to analyze user name. 
+        Returns Boolean.
+        '''
+        if re.search(r' ', name):
+            return True
+        return False
+    
+    
     def update_primary_features_dict(self, tw, date_stamp):
-        def is_retweet(tweet):
-            '''
-            Takes a python-native tweet object (a dict). Returns True if a tweet is any kind of retweet
-            '''
-            import re
-            rt_manual_pattern = r"^RT @"
-            rt_partial_pattern = r" RT @"
-            if 'retweeted_status' in tweet:
-                return True
-            elif re.search(rt_manual_pattern, tweet['text']):
-                return True
-            elif re.search(rt_partial_pattern, tweet['text']):
-                return True
-            return False
-    
-    
-        def is_there_number_except_year(screen_name): 
-            '''
-            Used in make_primary_features() to analyze user sceen_name. 
-            '''
-            if re.search(r'[0-9]+', screen_name):
-                if not int(screen_name[re.search(r'[0-9]+', screen_name).start():re.search(r'[0-9]+', screen_name).end()]) >= 50 or not int(screen_name[re.search(r'[0-9]+', screen_name).start():re.search(r'[0-9]+', screen_name).end()]) <= 99:
-                    return True
-            return False
-    
-    
-        def is_there_more_than_1_word(name):
-            '''
-            Used in make_primary_features() to analyze user name. 
-            '''
-            if re.search(r' ', name):
-                return True
-            return False
-        
+        '''
+        Stores data for Twitter static snapshots in dictionary feature_dict.
+        Returns None. 
+        '''
         # Function itself begins here:
         user_id = tw['user']['id_str']
         # created account
@@ -410,7 +524,7 @@ class Twitter_accounts():
                 self.feature_dict[user_id]['num_tw_w_url'] = 1
             else:
                 self.feature_dict[user_id]['num_tw_w_url'] = 0
-            if is_retweet(tw):
+            if self._is_retweet_(tw):
                 self.feature_dict[user_id]['rt_num'] = 1
             else:
                 self.feature_dict[user_id]['rt_num'] = 0
@@ -434,7 +548,7 @@ class Twitter_accounts():
             self.feature_dict[user_id]['retweeted_accounts'] = set()
             if 'retweeted_status' in tw and not tw['retweeted_status'] is None:
                 self.feature_dict[user_id]['retweeted_accounts'].add(tw['retweeted_status']['user']['id'])
-            if is_there_number_except_year(tw['user']['screen_name']):
+            if self._is_there_number_except_year_(tw['user']['screen_name']):
                 self.feature_dict[user_id]['digits_in_screen_name'] = 1    
             else:
                 self.feature_dict[user_id]['digits_in_screen_name'] = 0
@@ -443,7 +557,7 @@ class Twitter_accounts():
                     self.feature_dict[user_id]['location_specified'] = 1
             else:
                 self.feature_dict[user_id]['location_specified'] = 0
-            if is_there_more_than_1_word(tw['user']['name']):
+            if self._is_there_more_than_1_word_(tw['user']['name']):
                 self.feature_dict[user_id]['more_than_1_word_in_name'] = 1
             else: 
                 self.feature_dict[user_id]['more_than_1_word_in_name'] = 0
@@ -476,7 +590,7 @@ class Twitter_accounts():
             self.feature_dict[user_id]['url_num'].append(len(tw['entities']['urls']))
             if len(tw['entities']['urls']) > 0:
                 self.feature_dict[user_id]['num_tw_w_url'] += 1
-            if is_retweet(tw):
+            if self._is_retweet_(tw):
                 self.feature_dict[user_id]['rt_num'] += 1
             if tw['user']['default_profile_image'] and self.feature_dict[user_id]['default_profile_image'] == 0:
                 self.feature_dict[user_id]['default_profile_image_CHANGE'] = 1
@@ -492,7 +606,7 @@ class Twitter_accounts():
                 self.feature_dict[user_id]['user_description_CHANGE'] = 1
             if 'retweeted_status' in tw and not tw['retweeted_status'] is None:
                 self.feature_dict[user_id]['retweeted_accounts'].add(tw['retweeted_status']['user']['id'])
-            if is_there_number_except_year(tw['user']['screen_name']):
+            if self._is_there_number_except_year_(tw['user']['screen_name']):
                 self.feature_dict[user_id]['digits_in_screen_name'] += 1    
             self.feature_dict[user_id]['favourites_count'].append(tw['user']['favourites_count'])
             if tw['user']['geo_enabled'] and self.feature_dict[user_id]['geo_enabled'] == 0:
@@ -509,6 +623,10 @@ class Twitter_accounts():
     
     
     def update_user_for_entropy_time_sorted_dict(self, tw):
+        '''
+        Makes a list of all tweeting moments for each account. Used to compute entropy of inter-tweeting time intervals.
+        Returns None.
+        '''
         datList = tw['created_at'].split(' ')
         dat2 = '%s %s %s %s %s' % (datList[0], datList[1], datList[2], datList[3], datList[5])
         dt = datetime.datetime.strptime(dat2, '%a %b %d %H:%M:%S %Y')
@@ -521,7 +639,8 @@ class Twitter_accounts():
     
     def _make_probs_on_pauses_(self):
         '''
-        Returns a dictionary with probs of pauses ...
+        Makes a dictionary with probs of pauses between consecutive tweets.
+        Returns None.
         '''
         self.probs_on_pauses = {}
         for entry in self.user_for_entropy_time_sorted_dict:
@@ -551,7 +670,8 @@ class Twitter_accounts():
     def make_entropy(self):
         '''
         1 argument - output from get_probs_on_pauses()
-        Returns a dictionary with id_str as key and value = [entropy, number of DIFFERENT pauses ]
+        Makes a dictionary with id_str as key and value = [entropy, number of DIFFERENT pauses ]
+        Returns None
         '''
         self._make_probs_on_pauses_()
         self.entropy = {}
@@ -566,6 +686,10 @@ class Twitter_accounts():
     
     
     def get_final_feature_dict(self):
+        '''
+        Produces the final dictionary with data for bot detection. 
+        Returns None. 
+        '''
         self.final_feature_dict = {}
         if not hasattr(self, 'entropy'):
             self.make_entropy()
@@ -628,7 +752,10 @@ class Twitter_accounts():
             else:
                 self.final_feature_dict[id]['location_specified'] = 0
             self.final_feature_dict[id]['more_than_1_word_in_name'] = self.feature_dict[id]['more_than_1_word_in_name']
-            self.final_feature_dict[id]['max_num_tweets_this_user_favored_over_total_tweets'] = np.max(self.feature_dict[id]['favourites_count']) / self.feature_dict[id]['total_tw_count']
+            if self.feature_dict[id]['total_tw_count'] > 0:
+                self.final_feature_dict[id]['max_num_tweets_this_user_favored_over_total_tweets'] = np.max(self.feature_dict[id]['favourites_count']) / self.feature_dict[id]['total_tw_count']
+            else:
+                self.final_feature_dict[id]['max_num_tweets_this_user_favored_over_total_tweets'] = 0
             self.final_feature_dict[id]['geo_enabled_CHANGE'] = self.feature_dict[id]['geo_enabled_CHANGE'] 
             self.final_feature_dict[id]['geo_enabled'] = self.feature_dict[id]['geo_enabled'] 
             entropy = 0
@@ -700,6 +827,9 @@ class Twitter_accounts():
     
     
     def get_subset(self, subset, selfdict):
+        '''
+        Returns a dict with accounts from selfdict that are also in subset.
+        '''
         output = {}
         for acc in selfdict:
             if acc in subset:
@@ -708,6 +838,10 @@ class Twitter_accounts():
     
     
     def update_static(self, tw):
+        '''
+        Uses current tweets to update information to be displayed in a Twitter static snapshot.
+        Returns None. 
+        '''
         user_id = tw['user']['id_str']
         text = re.sub(r'(\n)|(\r)', ' ', tw['text'])
         datList = tw['created_at'].split(' ')
@@ -778,6 +912,12 @@ class Twitter_accounts():
     
     
     def make_html(self, path, min_num_tw, max_num_of_tweets = 100):
+        '''
+        Produces HTML code for Twitter static snapshots. 
+        Arguments: path - path to the folder where to write out HTML files;
+            min_num_tw - how many tweets an account should have in the collection for the snapshot to be produced;
+            max_num_of_tweets - the largest number of tweets to reproduce in an account's snapshot.
+        '''
         # check if path ends with a slash
         if path[len(path)-1] != '/':
             path = path + '/'
@@ -888,17 +1028,5 @@ class Twitter_accounts():
                         outp.write('<blockquote class="twitter-tweet" width="450"><p> ' + text + '</p> ' + name + " (@" + screen_name + ") <a href='https://twitter.com/" + screen_name + '/status/' + tweet_id + "'>" + full_time + '</a></blockquote>' + " <script src='https://platform.twitter.com/widgets.js' charset='utf-8'></script>" + '\n')
             outp.write('</div> </body> </html>')  
             outp.close()
-
-
-
-
-
-
-
-
-
-
-
-
 
 
