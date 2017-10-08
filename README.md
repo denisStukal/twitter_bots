@@ -18,32 +18,44 @@ Installation
 Making Static Twitter Snapshots
 ---
 
-This package allows one to process Twitter data stored in JSON format. Suppose, you have Twitter data from April 1 to April 3, 2017 stored in /Users/mydata.json, and the code repository is stored as /Users/twitter_bots.
+This package allows one to process Twitter data stored in JSON format. 
+
+Suppose, you have Twitter data from April 1 to April 3, 2017 stored in two data files: /Users/mydata1.json and /Users/mydata2.json.
+
+Suppose also that the code repository is stored as /Users/twitter_bots.
 
 1. Import the module:
 ```
 import codecs, re, os, datetime, time, math, sys
 import numpy as np
 from pysmap import SmappDataset
-import pickle
 sys.path.insert(0, '/Users/twitter_bots')
 from twitter_bots import Twitter_accounts
 ```
 
-2. Use `pysmap` to set up your data for processing:
+2. Use `SmappDataset` function in `pysmap` to set up your data for processing:
 ```
-dataset = SmappDataset(['json', '/Users/mydata.json'])
+dataset0 = SmappDataset(['json', '/Users/mydata1.json'])
+dataset1 = SmappDataset(['json', '/Users/mydata2.json'])
 ```
 
 3. Instantiate an object of Twitter_accounts class:
 ```
 mycol = Twitter_accounts(dates = [('2017-04-01', '2017-04-03')])
 ```
+The `dates` argument is a list of tuples of length 2, where the first element of the tuple specifies the start date and the second element specifies the last data for tweets to be processed.
 
 4. Loop over the dataset. Specify the dataset as a list. Specify `['html']` for the `functions` argument.
 ```
-mycol.loop([dataset], functions = ['html'], max_tweets = 'all')
+mycol.loop([dataset0, dataset1], functions = ['html'], max_tweets = 'all')
 ```
+
+In the case you have only one dataset called `mydataset`, you would run:
+```
+mycol.loop([mydataset], functions = ['html'], max_tweets = 'all')
+```
+
+The `functions` argument specifies what type of processing you want to perform on your data. The only type that is relevant for creating static Twitter snapshots is 'html' that must be specified as an element of a list. 
 
 5. Write out HTML files to the desired directory:
 ```
