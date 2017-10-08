@@ -3,11 +3,11 @@ twitter_bots
 
 This is a package for preprocessing Twitter data collections in order to perform bot detection on Twitter using the methodology described in:
 
-*Stukal, Denis, Sergey Sanovich, Richard Bonneau, and Joshua A. Tucker. (2017). "Detecting Political Bots on Russian Twitter." Forthcoming in Big Data*
+*Stukal, Denis, Sergey Sanovich, Richard Bonneau, and Joshua A. Tucker. (2017). "Detecting Political Bots on Russian Twitter." Under review*
 
 It also allows you to create static Twitter snapshots for reproducible Twitter account coding, along the lines out papers:
-* Sanovich, Sergey, Denis Stukal, and Joshua A. Tucker. (2017). “Turning the Virtual Tables: Government Strategies for Addressing Online Opposition with an Application to Russia.” *Forthcoming in Comparative Politics.*
-* Stukal, Denis, Sergey Sanovich, Richard Bonneau, and Joshua A. Tucker. (2017). "Detecting Political Bots on Russian Twitter." *Forthcoming in Big Data*
+* Sanovich, Sergey, Denis Stukal, and Joshua A. Tucker. (2017). “Turning the Virtual Tables: Government Strategies for Addressing Online Opposition with an Application to Russia.” *Under review*
+* Stukal, Denis, Sergey Sanovich, Richard Bonneau, and Joshua A. Tucker. (2017). "Detecting Political Bots on Russian Twitter." *Under review*
 
 Installation
 ---
