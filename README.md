@@ -43,7 +43,7 @@ dataset1 = SmappDataset(['json', '/Users/mydata2.json'])
 ```
 mycol = Twitter_accounts(dates = [('2017-04-01', '2017-04-03')])
 ```
-The `dates` argument is a list of tuples of length 2, where the first element of the tuple specifies the start date and the second element specifies the last data for tweets to be processed.
+The `dates` argument is a list of tuples of length 2, where the first element of the tuple specifies the start date and the second element specifies the last date for tweets to be processed. All dates must be specified in the 'yyyy-mm-dd' format.
 
 4. Loop over the dataset. Specify the dataset as a list. Specify `['html']` for the `functions` argument.
 ```
@@ -55,7 +55,7 @@ In the case you have only one dataset called `mydataset`, you would run:
 mycol.loop([mydataset], functions = ['html'], max_tweets = 'all')
 ```
 
-The `functions` argument specifies what type of processing you want to perform on your data. The only type that is relevant for creating static Twitter snapshots is 'html' that must be specified as an element of a list. 
+The `functions` argument specifies what type of processing you want to perform on your data. The only type that is relevant for creating static Twitter snapshots is 'html' that must be specified as a string inside a list. 
 
 5. Write out HTML files to the desired directory:
 ```
