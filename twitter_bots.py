@@ -31,6 +31,8 @@ class Twitter_accounts():
         # References to storing sets and dictionaries
         self.days = set()
         self.all_tweet_ids = set()
+        self.all_relevant_tweet_ids = set()
+        self.all_relevant_account_ids = set()
     
     
     def _enumerate_months_(self):
@@ -110,6 +112,8 @@ class Twitter_accounts():
                     self.all_tweet_ids.add(tw['id_str'])
                     # Do everything only if tw in the time-range
                     if self.is_in_time_range(tw):
+                        self.all_relevant_tweet_ids.add(tw['id_str'])
+                        self.all_relevant_account_ids.add(tw['user']['id_str'])
                         # Check if user_id is in the subset of ids provided (if any)
                         if self.account_subset is None or tw['user']['id_str'] in self.account_subset:
                             tw_date_stamp = self.get_tw_date_stamp(tw)
@@ -143,6 +147,7 @@ class Twitter_accounts():
                                         self.update_user_for_entropy_time_sorted_dict(tw) # features
                                     if 'html' in functions:
                                         self.update_static(tw)
+        print('Looped over {0} tweets and {1} accounts'.format(self.all_relevant_tweet_ids, self.all_relevant_account_ids))
     
     
     def is_in_time_range(self, tw):
