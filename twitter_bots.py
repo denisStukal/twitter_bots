@@ -270,7 +270,7 @@ class Twitter_accounts():
         Add account creation data for userID that was not found in the collection before. 
         Returns None.
         '''
-        date_stamp = get_acc_date_stamp(tw)
+        date_stamp = self.get_acc_date_stamp(tw)
         if tw['user']['id_str'] not in self.account_creation_date:
             self.account_creation_date[tw['user']['id_str']] = date_stamp
     
