@@ -33,6 +33,8 @@ class Twitter_accounts():
         self.all_tweet_ids = set()
         self.all_relevant_tweet_ids = set()
         self.all_relevant_account_ids = set()
+        self.all_subset_ids = set()
+        self.all_subset_tweet_ids = set()
     
     
     def _enumerate_months_(self):
@@ -116,6 +118,8 @@ class Twitter_accounts():
                         self.all_relevant_account_ids.add(tw['user']['id_str'])
                         # Check if user_id is in the subset of ids provided (if any)
                         if self.account_subset is None or tw['user']['id_str'] in self.account_subset:
+                            self.all_subset_tweet_ids.add(tw['id_str'])
+                            self.all_subset_ids.add(tw['user']['id_str'])
                             tw_date_stamp = self.get_tw_date_stamp(tw)
                             self.update_days(tw, tw_date_stamp)
                             if functions is not None:
@@ -147,7 +151,7 @@ class Twitter_accounts():
                                         self.update_user_for_entropy_time_sorted_dict(tw) # features
                                     if 'html' in functions:
                                         self.update_static(tw)
-        print('Looped over {0} tweets and {1} accounts'.format(self.all_relevant_tweet_ids, self.all_relevant_account_ids))
+        print('Looped over {0} tweets and {1} accounts in time range.\n {2} accounts and {3} tweets in the subset'.format(len(self.all_relevant_tweet_ids), len(self.all_relevant_account_ids), len(self.all_subset_ids), len(self.all_subset_tweet_ids)))
     
     
     def is_in_time_range(self, tw):
@@ -916,12 +920,12 @@ class Twitter_accounts():
             self.static[user_id][date_time]['listed_count'] = tw['user']['listed_count']
     
     
-    def make_html(self, path, min_num_tw, max_num_of_tweets = 100):
+    def make_html(self, path, min_num_tw, max_num_tw = 100):
         '''
         Produces HTML code for Twitter static snapshots. 
         Arguments: path - path to the folder where to write out HTML files;
             min_num_tw - how many tweets an account should have in the collection for the snapshot to be produced;
-            max_num_of_tweets - the largest number of tweets to reproduce in an account's snapshot.
+            max_num_tw - the largest number of tweets to reproduce in an account's snapshot.
         '''
         # check if path ends with a slash
         if path[len(path)-1] != '/':
@@ -975,7 +979,7 @@ class Twitter_accounts():
             for day in sorted(dic[id], reverse = True):
                 for time in sorted(dic[id][day], reverse = True):
                     counter += 1
-                    if counter <= max_num_of_tweets:
+                    if counter <= max_num_tw:
                         candidate_background_image_url = dic[id][day][time]['profile_background_image_url']
                         candidate_image_url = dic[id][day][time]['profile_image_url']
                         if profile_background_image_url == ' ' and candidate_background_image_url != "NA":
@@ -1024,7 +1028,7 @@ class Twitter_accounts():
             for day in sorted(dic[id], reverse = True):
                 for time in sorted(dic[id][day], reverse = True):
                     counter += 1
-                    if counter <= max_num_of_tweets:
+                    if counter <= max_num_tw:
                         text = dic[id][day][time]['tweet']
                         name = dic[id][day][time]['name']
                         screen_name = dic[id][day][time]['screen_name']

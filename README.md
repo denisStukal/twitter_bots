@@ -3,11 +3,13 @@ twitter_bots
 
 This is a package for preprocessing Twitter data collections in order to perform bot detection on Twitter using the methodology described in:
 
-*Stukal, Denis, Sergey Sanovich, Richard Bonneau, and Joshua A. Tucker. (2017). "Detecting Political Bots on Russian Twitter." Forthcoming in Big Data*
+*Stukal, Denis, Sergey Sanovich, Richard Bonneau, and Joshua A. Tucker. (2017). "Detecting Political Bots on Russian Twitter." Big Data 5(4): 310-324.*
 
-It also allows you to create static Twitter snapshots for reproducible Twitter account coding, along the lines out papers:
-* Sanovich, Sergey, Denis Stukal, and Joshua A. Tucker. (2017). “Turning the Virtual Tables: Government Strategies for Addressing Online Opposition with an Application to Russia.” *Forthcoming in Comparative Politics.*
-* Stukal, Denis, Sergey Sanovich, Richard Bonneau, and Joshua A. Tucker. (2017). "Detecting Political Bots on Russian Twitter." *Forthcoming in Big Data*
+It also creates static Twitter snapshots for reproducible Twitter account coding, along the lines out papers:
+
+* Sanovich, Sergey, Denis Stukal, and Joshua A. Tucker. (2018). “Turning the Virtual Tables: Government Strategies for Addressing Online Opposition with an Application to Russia.” *Forthcoming in Comparative Politics.*
+
+* Stukal, Denis, Sergey Sanovich, Richard Bonneau, and Joshua A. Tucker. (2017). "Detecting Political Bots on Russian Twitter." *Big Data* 5(4): 310-324.
 
 Installation
 ---
@@ -59,7 +61,7 @@ The `functions` argument specifies what type of processing you want to perform o
 
 5. Write out HTML files to the desired directory:
 ```
-mycol.make_html(path = '/Users/htmls_directory', min_num_tw = 10, max_num_of_tweets = 100)
+mycol.make_html(path = '/Users/htmls_directory', min_num_tw = 10, max_num_tw = 100)
 ```
 
 
