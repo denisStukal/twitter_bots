@@ -69,13 +69,17 @@ class Twitter_accounts():
                 self.user_for_entropy_time_sorted_dict = {}
                 self.static = {}
             else:
+                if 'screen_name' in functions:
+                    self.screen_names = {}
                 if 'tw' in functions:
+                    self.tw_per_account = {}
+                if 'tw_time' in functions:
                     self.tw_per_month_per_account = {}
                     min_month, max_month = self._enumerate_months_()
                     for month_num in range(min_month,max_month+1):
                         self.tw_per_month_per_account[month_num] = {}
-                    self.tw_per_account = {}
                     self.tw_per_day = {}
+                if 'lang' in functions:
                     self.id_lang_dict = {}
                 if 'days_account' in functions:
                     self.active_days_per_account = {}
@@ -125,8 +129,8 @@ class Twitter_accounts():
                             if functions is not None:
                                 if 'all' in functions:
                                     self.update_tw_per_account(tw)      # tw
-                                    self.update_tw_per_month_per_account(tw) # tw
-                                    self.update_tw_per_day(tw, tw_date_stamp)  # tw
+                                    self.update_tw_per_month_per_account(tw) # tw_time
+                                    self.update_tw_per_day(tw, tw_date_stamp)  # tw_time
                                     self.update_languages(tw)
                                     self.update_active_days(tw, tw_date_stamp)
                                     self.update_account_creation_date(tw)  # creation
@@ -135,15 +139,19 @@ class Twitter_accounts():
                                     self.update_primary_features_dict(tw, tw_date_stamp) # features 
                                     self.update_user_for_entropy_time_sorted_dict(tw) # features
                                 else:
-                                    if 'tw' in functions :
-                                        self.update_tw_per_account(tw)      # tw/features
-                                        self.update_tw_per_month_per_account(tw) # tw
-                                        self.update_tw_per_day(tw, tw_date_stamp)  # tw
+                                    if 'screen_name' in functions:
+                                        self.update_screen_names(tw)
+                                    if 'tw' in functions:
+                                        self.update_tw_per_account(tw) 
+                                    if 'tw_time' in functions:
+                                        self.update_tw_per_month_per_account(tw)
+                                        self.update_tw_per_day(tw, tw_date_stamp)
+                                    if 'lang' in functions:
                                         self.update_languages(tw)
                                     if 'days_account' in functions:
                                         self.update_active_days(tw, tw_date_stamp)
                                     if 'creation' in functions:
-                                        self.update_account_creation_date(tw)  # creation
+                                        self.update_account_creation_date(tw)
                                     if 'features' in functions:
                                         self.update_tw_per_account(tw) # tw/features
                                         self.update_min_max_tweets_per_account(tw)  # features
@@ -267,6 +275,15 @@ class Twitter_accounts():
         if tw['user']['id_str'] not in self.active_days_per_account:
             self.active_days_per_account[tw['user']['id_str']] = set()
         self.active_days_per_account[tw['user']['id_str']].add(date_stamp)
+    
+    
+    def update_screen_names(self, tw):
+        '''
+        Update set of screen_names associated with a given ID
+        '''
+        if tw['user']['id_str'] not in self.screen_names:
+            self.screen_names[tw['user']['id_str']] = set()
+        self.screen_names[tw['user']['id_str']].add(tw['user']['screen_name'])
     
     
     def update_account_creation_date(self, tw):

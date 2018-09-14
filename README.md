@@ -7,7 +7,7 @@ This is a package for preprocessing Twitter data collections in order to perform
 
 It also creates static Twitter snapshots for reproducible Twitter account coding, along the lines out papers:
 
-* Sanovich, Sergey, Denis Stukal, and Joshua A. Tucker. (2018). “Turning the Virtual Tables: Government Strategies for Addressing Online Opposition with an Application to Russia.” *Forthcoming in Comparative Politics.*
+* Sanovich, Sergey, Denis Stukal, and Joshua A. Tucker. (2018). “Turning the Virtual Tables: Government Strategies for Addressing Online Opposition with an Application to Russia.” *Comparative Politics* 50(3): 435-482.
 
 * Stukal, Denis, Sergey Sanovich, Richard Bonneau, and Joshua A. Tucker. (2017). "Detecting Political Bots on Russian Twitter." *Big Data* 5(4): 310-324.
 
