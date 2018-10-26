@@ -140,7 +140,8 @@ class Twitter_accounts():
                                     self.update_user_for_entropy_time_sorted_dict(tw) # features
                                 else:
                                     if 'screen_name' in functions:
-                                        self.update_screen_names(tw)
+                                        #self.update_screen_names(tw)
+                                        self.update_screen_names_w_date(tw)
                                     if 'tw' in functions:
                                         self.update_tw_per_account(tw) 
                                     if 'tw_time' in functions:
@@ -284,6 +285,18 @@ class Twitter_accounts():
         if tw['user']['id_str'] not in self.screen_names:
             self.screen_names[tw['user']['id_str']] = set()
         self.screen_names[tw['user']['id_str']].add(tw['user']['screen_name'])
+    
+    
+    def update_screen_names_w_date(self, tw):
+        '''
+        Update set of screen_names associated with a given ID
+        '''
+        date_stamp = self.get_tw_date_stamp(tw)
+        if tw['user']['id_str'] not in self.screen_names:
+            self.screen_names[tw['user']['id_str']] = {date_stamp:tw['user']['screen_name']}
+        else:
+            if date_stamp not in self.screen_names[tw['user']['id_str']]:
+                self.screen_names[tw['user']['id_str']][date_stamp] = tw['user']['screen_name']
     
     
     def update_account_creation_date(self, tw):
@@ -888,7 +901,7 @@ class Twitter_accounts():
             self.static[user_id][date_time]['statuses_count'] = tw['user']['statuses_count']
             self.static[user_id][date_time]['followers_count'] = tw['user']['followers_count']
             self.static[user_id][date_time]['friends_count'] = tw['user']['friends_count']
-            creation_list = tw['created_at'].split(' ')
+            creation_list = tw['user']['created_at'].split(' ')
             creation2 = '%s %s %s %s' % (creation_list[1], creation_list[2], creation_list[5], creation_list[3])
             creation_dt = datetime.datetime.strptime(creation2, '%b %d %Y %H:%M:%S')
             creation_date_time = str(creation_dt)
